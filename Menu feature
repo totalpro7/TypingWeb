@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>WPM Test – Typing Speed Test & Typing Practice Online</title>
+  <meta name="description" content="Kostenloser WPM Test und Typing Speed Test. Miss Tippgeschwindigkeit, Wörter pro Minute, Genauigkeit und Zeit. Ideal für Typing Practice online – direkt im Browser, ohne Anmeldung." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://totalpro7.github.io/TypingWeb/" />
+
+  <style>
+    :root{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+    body{display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f4f6f8;color:#111}
+    .card{width:860px;max-width:95%;background:#fff;border-radius:12px;box-shadow:0 6px 30px rgba(10,10,20,0.06);padding:28px}
+
+    /* Top bar / menu */
+    .topbar{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+    .topbar h1{margin:0;font-size:20px}
+    .menu{margin-left:auto;display:flex;gap:8px;align-items:center}
+    .menu button{
+      padding:6px 10px;border-radius:999px;border:1px solid #d0d7df;background:#fff;cursor:pointer;
+      font-size:13px;
+    }
+    .menu button.active{font-weight:600}
+    .menu .divider{width:1px;height:18px;background:#e5e7eb;margin:0 4px}
+
+    /* Intro */
+    .seo-intro{font-size:14px;color:#4b5563;max-width:780px;margin:0 0 12px;line-height:1.45}
+
+    .text-area{background:#f7fbff;border:1px solid #e5eff9;padding:18px;border-radius:8px;min-height:140px;font-size:20px;line-height:1.5;overflow:auto}
+    .text-area span{white-space:pre-wrap}
+
+    .controls{display:flex;gap:12px;margin-top:14px;align-items:center;flex-wrap:wrap}
+    .controls button{padding:8px 12px;border-radius:8px;border:1px solid #d0d7df;background:#fff;cursor:pointer}
+    .controls select{padding:8px 12px;border-radius:8px;border:1px solid #d0d7df;background:#fff}
+
+    .stats{display:flex;gap:18px;margin-top:12px;flex-wrap:wrap}
+    .stat{background:#fbfdff;border:1px solid #eef6ff;padding:10px 14px;border-radius:8px}
+
+    .input{margin-top:12px}
+    textarea{width:100%;min-height:80px;padding:12px;font-size:18px;border-radius:8px;border:1px solid #dcdcdc;box-sizing:border-box}
+
+    .char.correct{color:green}
+    .char.incorrect{color:red;text-decoration:underline}
+    .char.current{background:rgba(0,120,255,0.08);border-bottom:2px solid rgba(0,120,255,0.2)}
+
+    .footer-note{font-size:13px;color:#6b7280;margin-top:12px;line-height:1.4}
+
+    /* About panel */
+    .panel{margin-top:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fcfcfd;padding:14px}
+    .panel h2{margin:0 0 8px;font-size:16px}
+    .panel p{margin:0 0 10px;font-size:13px;line-height:1.55;color:#374151}
+    .panel ul{margin:0 0 0 16px;padding:0;font-size:13px;color:#374151;line-height:1.55}
+    .hidden{display:none}
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <div class="topbar">
+      <h1 id="titleH1">WPM Test – Typing Speed Test & Typing Practice</h1>
+
+      <div class="menu" aria-label="Menü">
+        <button id="btnDE" type="button" class="active">DE</button>
+        <button id="btnEN" type="button">EN</button>
+        <span class="divider" aria-hidden="true"></span>
+        <button id="btnAbout" type="button">Über</button>
+      </div>
+    </div>
+
+    <p class="seo-intro" id="introText">
+      Mit diesem kostenlosen <strong>WPM Test</strong> kannst du deine <strong>Tippgeschwindigkeit</strong>,
+      <strong>Wörter pro Minute</strong> und <strong>Genauigkeit</strong> messen. Der <strong>Typing Speed Test</strong>
+      eignet sich für schnelle Checks und regelmäßige <strong>Typing Practice</strong> – direkt im Browser, ohne Anmeldung.
+    </p>
+
+    <!-- About panel (toggle) -->
+    <section class="panel hidden" id="aboutPanel" aria-live="polite">
+      <h2 id="aboutTitle">Über diese Website</h2>
+      <p id="aboutP1">
+        Dieser Typing Test misst, wie schnell und genau du tippen kannst. Du startest, indem du im Eingabefeld anfängst zu tippen.
+        Währenddessen siehst du WPM, CPM und Accuracy live.
+      </p>
+      <p id="aboutP2">
+        <strong>WPM</strong> (Words Per Minute) wird meist so berechnet: (korrekte Zeichen / 5) ÷ Minuten.
+        Die „5“ ist ein Standard, weil ein Wort im Schnitt als 5 Zeichen angenommen wird.
+      </p>
+      <ul id="aboutList">
+        <li>Wähle einen Text (kurz, mehrere Sätze, Absatz).</li>
+        <li>Tippe den Text ab. Fehler werden rot markiert.</li>
+        <li>Mit „Neu starten“ setzt du den aktuellen Text zurück.</li>
+        <li>Mit „Neuen Text“ bekommst du einen anderen Text.</li>
+      </ul>
+    </section>
+
+    <div class="text-area" id="textArea" aria-live="polite"></div>
+
+    <div class="controls">
+      <select id="sampleSelect" aria-label="Textauswahl">
+        <option value="0" id="opt0">Kurzer Satz</option>
+        <option value="1" id="opt1">Mehrere Sätze</option>
+        <option value="2" id="opt2">Zufälliger Absatz</option>
+      </select>
+      <button id="restartBtn" type="button">Neu starten</button>
+      <button id="changeBtn" type="button">Neuen Text</button>
+      <div style="margin-left:auto" id="timeWrap">Zeit: <strong id="time">0:00</strong></div>
+    </div>
+
+    <div class="stats" aria-label="Statistiken">
+      <div class="stat"><span id="lblWpm">WPM</span>: <strong id="wpm">0</strong></div>
+      <div class="stat"><span id="lblCpm">CPM</span>: <strong id="cpm">0</strong></div>
+      <div class="stat"><span id="lblAcc">Accuracy</span>: <strong id="acc">100%</strong></div>
+    </div>
+
+    <div class="input">
+      <textarea id="input" placeholder="Hier tippen — die Zeit startet bei deinem ersten Zeichen" aria-label="Eingabefeld zum Tippen"></textarea>
+    </div>
+
+    <div class="footer-note" id="footNote">
+      Hinweis: WPM berechnet sich hier als (korrekte Zeichen / 5) ÷ Minuten. Dieser Standard geht davon aus, dass ein Wort durchschnittlich 5 Zeichen hat.
+    </div>
+  </div>
+
+  <script>
+    // ---------------------------
+    // Simple i18n (DE/EN)
+    // ---------------------------
+    const I18N = {
+      de: {
+        htmlLang: "de",
+        docTitle: "WPM Test – Typing Speed Test & Typing Practice Online",
+        metaDesc: "Kostenloser WPM Test und Typing Speed Test. Miss Tippgeschwindigkeit, Wörter pro Minute, Genauigkeit und Zeit. Ideal für Typing Practice online – direkt im Browser, ohne Anmeldung.",
+        h1: "WPM Test – Typing Speed Test & Typing Practice",
+        intro: `Mit diesem kostenlosen <strong>WPM Test</strong> kannst du deine <strong>Tippgeschwindigkeit</strong>,
+               <strong>Wörter pro Minute</strong> und <strong>Genauigkeit</strong> messen. Der <strong>Typing Speed Test</strong>
+               eignet sich für schnelle Checks und regelmäßige <strong>Typing Practice</strong> – direkt im Browser, ohne Anmeldung.`,
+        aboutBtn: "Über",
+        aboutTitle: "Über diese Website",
+        aboutP1: "Dieser Typing Test misst, wie schnell und genau du tippen kannst. Du startest, indem du im Eingabefeld anfängst zu tippen. Währenddessen siehst du WPM, CPM und Accuracy live.",
+        aboutP2: "<strong>WPM</strong> (Words Per Minute) wird meist so berechnet: (korrekte Zeichen / 5) ÷ Minuten. Die „5“ ist ein Standard, weil ein Wort im Schnitt als 5 Zeichen angenommen wird.",
+        aboutList: [
+          "Wähle einen Text (kurz, mehrere Sätze, Absatz).",
+          "Tippe den Text ab. Fehler werden rot markiert.",
+          "Mit „Neu starten“ setzt du den aktuellen Text zurück.",
+          "Mit „Neuen Text“ bekommst du einen anderen Text."
+        ],
+        opt0: "Kurzer Satz",
+        opt1: "Mehrere Sätze",
+        opt2: "Zufälliger Absatz",
+        restart: "Neu starten",
+        change: "Neuen Text",
+        timeLabel: "Zeit",
+        wpmLabel: "WPM",
+        cpmLabel: "CPM",
+        accLabel: "Accuracy",
+        placeholder: "Hier tippen — die Zeit startet bei deinem ersten Zeichen",
+        foot: "Hinweis: WPM berechnet sich hier als (korrekte Zeichen / 5) ÷ Minuten. Dieser Standard geht davon aus, dass ein Wort durchschnittlich 5 Zeichen hat.",
+        samples: [
+          "Das ist ein kurzer Test.",
+          "Übung macht den Meister. Tipp so schnell und genau wie möglich, aber mach dir keinen Druck.",
+          "In einer ruhigen Umgebung kannst du deutlich schneller und genauer tippen. Regelmäßiges Training verbessert deine Geschwindigkeit und Genauigkeit nachhaltig."
+        ]
+      },
+      en: {
+        htmlLang: "en",
+        docTitle: "WPM Test – Free Typing Speed Test & Typing Practice",
+        metaDesc: "Free WPM test and typing speed test. Measure words per minute, accuracy, CPM and time. Great for typing practice online — no signup.",
+        h1: "WPM Test – Typing Speed Test & Typing Practice",
+        intro: `This free <strong>WPM test</strong> helps you measure <strong>typing speed</strong>, <strong>words per minute</strong>, and <strong>accuracy</strong>.
+               Use it for quick checks and regular <strong>typing practice</strong> — right in your browser, no signup.`,
+        aboutBtn: "About",
+        aboutTitle: "About this website",
+        aboutP1: "This typing test measures how fast and accurately you type. Start by typing in the input box. You’ll see WPM, CPM, and accuracy update live.",
+        aboutP2: "<strong>WPM</strong> (Words Per Minute) is commonly calculated as: (correct characters / 5) ÷ minutes. The “5” is a standard assumption for average word length.",
+        aboutList: [
+          "Choose a text length (short, multiple sentences, paragraph).",
+          "Type the text — mistakes are highlighted in red.",
+          "Use “Restart” to reset the current text.",
+          "Use “New text” to load a different sample."
+        ],
+        opt0: "Short sentence",
+        opt1: "Multiple sentences",
+        opt2: "Random paragraph",
+        restart: "Restart",
+        change: "New text",
+        timeLabel: "Time",
+        wpmLabel: "WPM",
+        cpmLabel: "CPM",
+        accLabel: "Accuracy",
+        placeholder: "Type here — the timer starts with your first character",
+        foot: "Note: WPM is calculated as (correct characters / 5) ÷ minutes. This standard assumes an average word length of 5 characters.",
+        samples: [
+          "This is a short test.",
+          "Practice makes progress. Type as fast and accurately as you can, but don’t stress about it.",
+          "In a calm environment, you can type faster and more accurately. Regular practice improves both speed and accuracy over time."
+        ]
+      }
+    };
+
+    let currentLang = "de";
+
+    // Update <meta name="description"> dynamically
+    function setMetaDescription(content) {
+      let tag = document.querySelector('meta[name="description"]');
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('name', 'description');
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    }
+
+    function applyLanguage(lang) {
+      currentLang = lang;
+      const t = I18N[lang];
+
+      document.documentElement.lang = t.htmlLang;
+      document.title = t.docTitle;
+      setMetaDescription(t.metaDesc);
+
+      // Buttons active state
+      btnDE.classList.toggle("active", lang === "de");
+      btnEN.classList.toggle("active", lang === "en");
+      btnAbout.textContent = t.aboutBtn;
+
+      // Main texts
+      titleH1.textContent = t.h1;
+      introText.innerHTML = t.intro;
+
+      // About texts
+      aboutTitle.textContent = t.aboutTitle;
+      aboutP1.textContent = t.aboutP1;
+      aboutP2.innerHTML = t.aboutP2;
+
+      aboutList.innerHTML = "";
+      for (const liText of t.aboutList) {
+        const li = document.createElement("li");
+        li.textContent = liText;
+        aboutList.appendChild(li);
+      }
+
+      // Controls / labels
+      opt0.textContent = t.opt0;
+      opt1.textContent = t.opt1;
+      opt2.textContent = t.opt2;
+      restartBtn.textContent = t.restart;
+      changeBtn.textContent = t.change;
+      timeWrap.firstChild.textContent = t.timeLabel + ": ";
+      lblWpm.textContent = t.wpmLabel;
+      lblCpm.textContent = t.cpmLabel;
+      lblAcc.textContent = t.accLabel;
+      input.placeholder = t.placeholder;
+      footNote.textContent = t.foot;
+
+      // Reload samples for this language
+      loadSample(parseInt(sampleSelect.value, 10));
+    }
+
+    // ---------------------------
+    // Typing test logic (yours, adapted for language samples)
+    // ---------------------------
+    const textArea = document.getElementById('textArea');
+    const input = document.getElementById('input');
+    const timeDisplay = document.getElementById('time');
+    const wpmDisplay = document.getElementById('wpm');
+    const cpmDisplay = document.getElementById('cpm');
+    const accDisplay = document.getElementById('acc');
+    const restartBtn = document.getElementById('restartBtn');
+    const changeBtn = document.getElementById('changeBtn');
+    const sampleSelect = document.getElementById('sampleSelect');
+
+    // Menu elements
+    const btnDE = document.getElementById("btnDE");
+    const btnEN = document.getElementById("btnEN");
+    const btnAbout = document.getElementById("btnAbout");
+    const aboutPanel = document.getElementById("aboutPanel");
+
+    // Text elements
+    const titleH1 = document.getElementById("titleH1");
+    const introText = document.getElementById("introText");
+    const aboutTitle = document.getElementById("aboutTitle");
+    const aboutP1 = document.getElementById("aboutP1");
+    const aboutP2 = document.getElementById("aboutP2");
+    const aboutList = document.getElementById("aboutList");
+    const opt0 = document.getElementById("opt0");
+    const opt1 = document.getElementById("opt1");
+    const opt2 = document.getElementById("opt2");
+    const timeWrap = document.getElementById("timeWrap");
+    const lblWpm = document.getElementById("lblWpm");
+    const lblCpm = document.getElementById("lblCpm");
+    const lblAcc = document.getElementById("lblAcc");
+    const footNote = document.getElementById("footNote");
+
+    let chars = [];
+    let startTime = null;
+    let timerInterval = null;
+
+    function getSamples() {
+      return I18N[currentLang].samples;
+    }
+
+    function loadSample(index = 0) {
+      const samples = getSamples();
+      const text = samples[index % samples.length];
+
+      textArea.innerHTML = '';
+      chars = [];
+      for (const ch of text) {
+        const span = document.createElement('span');
+        span.textContent = ch;
+        span.className = 'char';
+        textArea.appendChild(span);
+        chars.push(span);
+      }
+      if (chars.length) chars[0].classList.add('current');
+      resetState();
+    }
+
+    function resetState() {
+      input.value = '';
+      startTime = null;
+      clearInterval(timerInterval);
+      timeDisplay.textContent = '0:00';
+      wpmDisplay.textContent = '0';
+      cpmDisplay.textContent = '0';
+      accDisplay.textContent = '100%';
+      chars.forEach(s => s.classList.remove('correct','incorrect','current'));
+      if (chars.length) chars[0].classList.add('current');
+    }
+
+    function startTimer() {
+      if (startTime) return;
+      startTime = Date.now();
+      timerInterval = setInterval(updateStats, 250);
+    }
+
+    function updateStats() {
+      const elapsedMs = Date.now() - startTime;
+      const seconds = Math.floor(elapsedMs / 1000);
+      const mm = Math.floor(seconds / 60);
+      const ss = seconds % 60;
+      timeDisplay.textContent = mm + ':' + String(ss).padStart(2,'0');
+
+      const typed = input.value;
+      let correctChars = 0;
+      const typedCount = typed.length;
+
+      for (let i = 0; i < typed.length; i++) {
+        if (!chars[i]) break;
+        if (typed[i] === chars[i].textContent) correctChars++;
+      }
+
+      const minutes = Math.max(elapsedMs / 60000, 1/60);
+      const wpm = Math.round((correctChars / 5) / minutes);
+      const cpm = Math.round(correctChars / minutes);
+      const acc = typedCount === 0 ? 100 : Math.max(0, Math.round((correctChars / typedCount) * 100));
+
+      wpmDisplay.textContent = isFinite(wpm) ? wpm : 0;
+      cpmDisplay.textContent = isFinite(cpm) ? cpm : 0;
+      accDisplay.textContent = acc + '%';
+    }
+
+    function refreshMarking() {
+      const typed = input.value;
+      for (let i = 0; i < chars.length; i++) {
+        const span = chars[i];
+        span.classList.remove('correct','incorrect','current');
+        const typedChar = typed[i];
+        if (typedChar === undefined) {
+          // not typed yet
+        } else if (typedChar === span.textContent) {
+          span.classList.add('correct');
+        } else {
+          span.classList.add('incorrect');
+        }
+      }
+      const curIndex = Math.min(typed.length, chars.length - 1);
+      if (chars[curIndex]) chars[curIndex].classList.add('current');
+    }
+
+    // Events
+    input.addEventListener('input', () => {
+      if (!startTime) startTimer();
+      refreshMarking();
+      updateStats();
+      if (input.value.length >= chars.length) {
+        clearInterval(timerInterval);
+      }
+    });
+
+    restartBtn.addEventListener('click', () => resetState());
+
+    changeBtn.addEventListener('click', () => {
+      const samples = getSamples();
+      const idx = Math.floor(Math.random() * samples.length);
+      sampleSelect.value = String(idx);
+      loadSample(idx);
+    });
+
+    sampleSelect.addEventListener('change', (e) => {
+      loadSample(parseInt(e.target.value, 10));
+    });
+
+    // Menu actions
+    btnDE.addEventListener("click", () => applyLanguage("de"));
+    btnEN.addEventListener("click", () => applyLanguage("en"));
+
+    btnAbout.addEventListener("click", () => {
+      aboutPanel.classList.toggle("hidden");
+      // Optional: if user opens About, scroll a bit so it’s visible
+      if (!aboutPanel.classList.contains("hidden")) {
+        aboutPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+
+    // Init
+    applyLanguage("de");
+  </script>
+</body>
+</html>
